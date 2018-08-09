@@ -1,17 +1,16 @@
 import requests, bs4
 
 # Convert HTML to BS object
-res = requests.get("http://nerf.wikia.com/wiki/Category:N-Strike_blasters")
-res.raise_for_status()
-soup = bs4.BeautifulSoup(res.text, "html.parser")
+res = requests.get("http://nerf.wikia.com/wiki/Category:N-Strike_blasters") # get the HTML
+soup = bs4.BeautifulSoup(res.text, "html.parser") # Parse the HTML into soup object
 
 # Find elements
-elems = soup.select("tr")
-info = elems[0].select("a")
+elems = soup.select("tr") # get list of all tr tags in the soup object
+info = elems[0].select("a") # get list of all a tags in first tr tag
 
 # Get the text
-for data in info:
-    print(data.getText() + ": " + data.attrs["href"])
+for data in info: # Iterate through the info list
+    print(data.getText() + ": " + data.attrs["href"]) # print out the text in the tag and the attribute "href" (the link)
 
 
 
