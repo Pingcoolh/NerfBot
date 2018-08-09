@@ -1,4 +1,5 @@
 import discord
+from discord.ext import commands
 import asyncio
 import json
 import requests, bs4
@@ -66,30 +67,11 @@ def get_gun_info():
     for data in info:
         msg = msg + "\n" + data.select("h3")[0].getText() + ": " + data.select("div")[0].getText()
     return msg
-    
-
 
 @client.event
 async def on_ready():
     print('Logged in as: ' + client.user.name)
     print('User ID: ' + client.user.id)
-    print()
-    print("Send a [msg] or [exit]")
-    
-    command = ''
-    while (command != "exit"):
-        command = input("> ")
-        if (command == "msg"):
-            channel = client.get_channel(input("Channel ID: "))
-            print("Type !exit to leave")
-            msg = ''
-            while (msg != "!exit"):
-                msg = input("> ")
-                client.send_message(channel, msg)
-        else:
-            print("Unknown command")
-    
-    print("Logging out...")
-    client.logout()
 
 client.run(TOKEN)
+
