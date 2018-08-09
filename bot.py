@@ -3,7 +3,9 @@ import asyncio
 import json
 import requests, bs4
 
-TOKEN = 'NDc1ODYwOTczMjI0MzI5MjI2.DklMRA.eW2PjOg7ytZNzJXwXec_f4SGp9M'
+file = open("token.txt", "r")
+TOKEN = file.read()
+file.close()
 
 client = discord.Client()
 
@@ -70,11 +72,23 @@ def get_gun_info():
 @client.event
 async def on_ready():
     print('Logged in as: ' + client.user.name)
-    print('Token' + client.user.id)
+    print('User ID: ' + client.user.id)
     print()
+    print("Send a [msg] or [exit]")
+    
     command = ''
     while (command != "exit"):
         command = input("> ")
+        if (command == "msg"):
+            channel = client.get_channel(input("Channel ID: "))
+            print("Type !exit to leave")
+            msg = ''
+            while (msg != "!exit"):
+                msg = input("> ")
+                client.send_message(channel, msg)
+        else:
+            print("Unknown command")
+    
     print("Logging out...")
     client.logout()
 
