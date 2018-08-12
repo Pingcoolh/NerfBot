@@ -30,14 +30,18 @@ async def test():
 # Gun
 @client.command()
 async def gun(name):
+    embed = discord.Embed()
     try:
         url = search(name)
         msg = get_gun(url)
         title = get_gun_name(url)
+        image = get_gun_image(url)
+        embed = discord.Embed(title=title, description=msg, color=0x1976D2)
+        embed.set_thumbnail(url=image)
     except:
         title = "Error"
         msg = "Not found"
-    embed = discord.Embed(title=title, description=msg, color=0x1976D2)
+        embed = discord.Embed(title=title, description=msg, color=0xf44336)
     await client.say(embed=embed)
 
 
@@ -76,6 +80,12 @@ def get_gun_name(gun_url):
     soup = bs4.BeautifulSoup(res.text, "html.parser")
     elems = soup.select(".page-header__title")
     return elems[0].getText()
+
+def get_gun_image(gun_url):
+    res = requests.get(gun_url)
+    soup = bs4.BeautifulSoup(res.text, "html.parser")
+    elems = soup.select(".pi-image-thumbnail")
+    return elems[0].attrs["src"]
 
 
 client.run(TOKEN)
