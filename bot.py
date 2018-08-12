@@ -17,7 +17,6 @@ async def on_member_join(member):
     await client.send_message(server, fmt.format(member, server)) 
 
 
-# Random
 @client.command()
 async def hello():
     await client.say('Hello there!')
@@ -25,19 +24,30 @@ async def hello():
 @client.command()
 async def test():
     embed = discord.Embed(title="Test!", description="This is a test.", color=0x1976D2)
+    await client.say(embed=embed)
     
+@client.command()
+async def ping():
+    await client.say("Pong!")
 
 # Gun
 @client.command()
-async def gun(name):
+async def gun(*name):
+    gun_name = ''
+    for word in name:
+        gun_name += ' ' + word
+    embed = discord.Embed()
     try:
-        url = search(name)
+        url = search(gun_name)
         msg = get_gun(url)
         title = get_gun_name(url)
+        image = get_gun_image(url)
+        embed = discord.Embed(title=title, description=msg, color=0x1976D2)
+        embed.set_image(url=image)
     except:
         title = "Error"
         msg = "Not found"
-    embed = discord.Embed(title=title, description=msg, color=0x1976D2)
+        embed = discord.Embed(title=title, description=msg, color=0xf44336)
     await client.say(embed=embed)
 
 
@@ -67,7 +77,7 @@ def get_gun(gun_url):
 
     msg = ""
     for data in info:
-        msg = msg + "\n**" + data.select("h3")[0].getText() + ": **" + data.select("div")[0].getText()
+        msg = msg + "\n**" + data.select("h3")[0].getText() + ": **" + data.select("div")[0].get_text(strip=True, separator=" ")
     return msg
 
 
@@ -76,6 +86,12 @@ def get_gun_name(gun_url):
     soup = bs4.BeautifulSoup(res.text, "html.parser")
     elems = soup.select(".page-header__title")
     return elems[0].getText()
+
+def get_gun_image(gun_url):
+    res = requests.get(gun_url)
+    soup = bs4.BeautifulSoup(res.text, "html.parser")
+    elems = soup.select(".pi-image-thumbnail")
+    return elems[0].attrs["src"]
 
 
 client.run(TOKEN)
