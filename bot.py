@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 import asyncio
-import json
 import requests, bs4
 
 file = open("token.txt", "r")
@@ -29,6 +28,19 @@ async def test():
 @client.command()
 async def ping():
     await client.say("Pong!")
+
+@cient.command()
+async def pong():
+    await client.say("Ping!")
+    
+@client.command()
+async def echo(*args):
+    output = ''
+    for word in args:
+        output += word
+        output += ' '
+    await client.say(output)
+
 
 # Gun
 @client.command()
@@ -95,4 +107,3 @@ def get_gun_image(gun_url):
 
 
 client.run(TOKEN)
-
