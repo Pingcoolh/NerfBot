@@ -8,8 +8,7 @@ file = open("token.txt", "r")
 TOKEN = file.read()
 file.close()
 
-client = discord.Client()
-
+client = commands.Bot(command_prefix = '!')
 
 @client.event
 async def on_member_join(member):
@@ -18,46 +17,49 @@ async def on_member_join(member):
     await client.send_message(server, fmt.format(member, server)) 
 
 
+# Random
+@client.command()
+async def hello():
+    await client.say('Hello there!')
+
+@client.command()
+async def test():
+    embed = discord.Embed(title="Test!", description="This is a test.", color=0x1976D2)
+    
+
+# Gun
+@client.command()
+async def gun(name):
+    try:
+        url = search(name)
+        msg = get_gun(url)
+        title = get_gun_name(url)
+    except:
+        title = "Error"
+        msg = "Not found"
+    embed = discord.Embed(title=title, description=msg, color=0x1976D2)
+    await client.say(embed=embed)
+
+
+
 @client.event
-async def on_message(message):
-    # we do not want the bot to reply to itself
-    if message.author == client.user:
-        return
-
-    # normal conversation
-    if message.content.startswith('!hello'):
-        msg = 'Hello {0.author.mention}!'.format(message)
-        await client.send_message(message.channel, msg)
-
-    # Help
-    if message.content.startswith('!help'):
-        msg = '''{0.author.mention} Type !gun <name_of_gun> for more information about it. (lowercase only)
-	Example: !alpha trooper cs-12
-	Example: !hail-fire (sonic ice)
-	Example: !retaliator (elite xd)'''.format(message)
-        await client.send_message(message.channel, msg)
-
-    # testing
-    if message.content.startswith('!test'):
-        msg = '{0.author.mention} It works :)'.format(message)
-        await client.send_message(message.channel, msg)
-
-    if message.content.startswith('!embed'):
-        embed = discord.Embed(title="Embed!", description="This is an embed message!", color=0x1976D2)
-        await client.send_message(message.channel, embed=embed)
+async def on_ready():
+    print('Logged in as: ' + client.user.name)
+    print('User ID: ' + client.user.id)
+    print('Bot is ready')
 
 
-    # N-STRIKE ELITE
+def search(search):
+    res = requests.get("http://nerf.wikia.com/wiki/Special:Search?search=" + search.replace(' ', '+'))
+    soup = bs4.BeautifulSoup(res.text, "html.parser")
+    elems = soup.select(".Results")
+    results = elems[0].select("a")
+    return results[0].attrs["href"]
 
-    # Gun
-    if message.content.startswith('!gun'):
-        msg = get_gun_info()
-        await client.send_message(message.channel, msg)
 
+def get_gun(gun_url):
+    res = requests.get(gun_url)
 
-def get_gun_info():
-    res = requests.get("http://nerf.wikia.com/wiki/Alpha_Trooper_CS-12")
-    res.raise_for_status()
     soup = bs4.BeautifulSoup(res.text, "html.parser")
 
     elems = soup.select("aside")
@@ -65,13 +67,16 @@ def get_gun_info():
 
     msg = ""
     for data in info:
-        msg = msg + "\n" + data.select("h3")[0].getText() + ": " + data.select("div")[0].getText()
+        msg = msg + "\n**" + data.select("h3")[0].getText() + ": **" + data.select("div")[0].getText()
     return msg
 
-@client.event
-async def on_ready():
-    print('Logged in as: ' + client.user.name)
-    print('User ID: ' + client.user.id)
+
+def get_gun_name(gun_url):
+    res = requests.get(gun_url)
+    soup = bs4.BeautifulSoup(res.text, "html.parser")
+    elems = soup.select(".page-header__title")
+    return elems[0].getText()
+
 
 client.run(TOKEN)
 

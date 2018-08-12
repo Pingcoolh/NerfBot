@@ -8,9 +8,11 @@ file = open("token.txt", "r")
 TOKEN = file.read()
 file.close()
 
+''' EXAMPLE
 client = commands.Bot(command_prefix = '!')
 
-@client.event
+
+@client.event()
 async def on_ready():
     print('Bot is ready.')
 
@@ -27,3 +29,4 @@ async def echo(*args):
     await client.say(output)
 
 client.run(TOKEN)
+'''
