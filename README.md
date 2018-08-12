@@ -6,4 +6,5 @@ NerfBot is a Python Discord bot for Nerf gun information. It is based on discord
 * `discord.py` library
 * `requests` library
 * `bs4` library
+
 You can use `pip` to install these
