@@ -29,7 +29,7 @@ async def test():
 async def ping():
     await client.say("Pong!")
 
-@cient.command()
+@client.command()
 async def pong():
     await client.say("Ping!")
     
