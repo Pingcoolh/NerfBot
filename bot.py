@@ -44,12 +44,12 @@ async def echo(*args):
 
 # Gun
 @client.command()
-async def gun(*name):
+async def nerf(*name):
     gun_name = ''
     for word in name:
         gun_name += ' ' + word
     try:
-        await client.say(embed=get_gun(search(gun_name)))
+        await client.say(embed=search(gun_name))
     except:
         title = "Error"
         msg = "Not found"
@@ -70,7 +70,16 @@ def search(search):
     soup = bs4.BeautifulSoup(res.text, "lxml")
     elems = soup.select(".Results")
     results = elems[0].select("a")
-    return results[0].attrs["href"]
+
+    gun_url = results[0].attrs["href"]
+    if gun_url.endswith('/Performance'):
+        gun_url = gun_url[:-len('/Performance')]
+    elif gun_url.endswith('/Gallery'):
+        gun_url = gun_url[:-len('/Gallery')]
+
+    return get_gun(gun_url)
+        
+
 
 
 def get_gun(gun_url):
@@ -78,15 +87,20 @@ def get_gun(gun_url):
 
     soup = bs4.BeautifulSoup(res.text, "lxml")
 
-    elems = soup.select("aside")
-    info = elems[0].select(".pi-data")
+    try:
+        elems = soup.select_one("aside")
+        info = elems.select(".pi-data")
 
-    embed = discord.Embed(title=soup.select(".page-header__title")[0].getText(), color=0x1976D2)
-    embed.set_image(url=soup.select(".pi-image-thumbnail")[0].attrs["src"])
+        embed = discord.Embed(title=soup.select(".page-header__title")[0].getText(), color=0x1976D2)
+        embed.set_image(url=soup.select(".pi-image-thumbnail")[0].attrs["src"])
 
-    for data in info:
-        embed.add_field(name=data.select("h3")[0].getText(),value=data.select("div")[0].get_text(strip=True, separator=" "))
-    
+        for data in info:
+            embed.add_field(name=data.select("h3")[0].getText(),value=data.select("div")[0].get_text(strip=True, separator=", "))
+    except:
+        content = soup.select_one(".mw-content-text").find_all(['p','ul'], recursive=False)
+        msg = content[0].getText()
+        msg += content[1].getText()
+        embed = discord.Embed(title=soup.select(".page-header__title")[0].getText(), description=msg, color=0x1976D2)
     return embed
 
 
