@@ -3,11 +3,12 @@ NerfBot is a Python Discord bot for Nerf gun information. It is based on discord
 
 ## Requirements
 * Python 3.4.2 - 3.6.*
+* lxml parser
 * `discord.py` library
 * `requests` library
 * `bs4` library
 
-You can use `pip` to install these. For example: `python3 -m pip install -U discord.py requests bs4`
+You can use `pip` to install these libraries. For example: `python3 -m pip install -U discord.py requests bs4`
 
 ## Setup and running
 Before you run the bot, make sure to create a `token.txt` file in the same directory as the bot. In the `token.txt` file, insert your bot's token. **Make sure you do not add any extra spaces or enters in the file!!**
