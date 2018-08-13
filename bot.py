@@ -4,7 +4,7 @@ import asyncio
 import requests, bs4
 
 file = open("token.txt", "r")
-TOKEN = file.read()
+TOKEN = file.readline()
 file.close()
 
 client = commands.Bot(command_prefix = '!')
@@ -48,19 +48,13 @@ async def gun(*name):
     gun_name = ''
     for word in name:
         gun_name += ' ' + word
-    embed = discord.Embed()
     try:
-        url = search(gun_name)
-        msg = get_gun(url)
-        title = get_gun_name(url)
-        image = get_gun_image(url)
-        embed = discord.Embed(title=title, description=msg, color=0x1976D2)
-        embed.set_image(url=image)
+        await client.say(embed=get_gun(search(gun_name)))
     except:
         title = "Error"
         msg = "Not found"
         embed = discord.Embed(title=title, description=msg, color=0xf44336)
-    await client.say(embed=embed)
+        await client.say(embed=embed)
 
 
 
@@ -73,7 +67,7 @@ async def on_ready():
 
 def search(search):
     res = requests.get("http://nerf.wikia.com/wiki/Special:Search?search=" + search.replace(' ', '+'))
-    soup = bs4.BeautifulSoup(res.text, "html.parser")
+    soup = bs4.BeautifulSoup(res.text, "lxml")
     elems = soup.select(".Results")
     results = elems[0].select("a")
     return results[0].attrs["href"]
@@ -82,28 +76,18 @@ def search(search):
 def get_gun(gun_url):
     res = requests.get(gun_url)
 
-    soup = bs4.BeautifulSoup(res.text, "html.parser")
+    soup = bs4.BeautifulSoup(res.text, "lxml")
 
     elems = soup.select("aside")
     info = elems[0].select(".pi-data")
 
-    msg = ""
+    embed = discord.Embed(title=soup.select(".page-header__title")[0].getText(), color=0x1976D2)
+    embed.set_image(url=soup.select(".pi-image-thumbnail")[0].attrs["src"])
+
     for data in info:
-        msg = msg + "\n**" + data.select("h3")[0].getText() + ": **" + data.select("div")[0].get_text(strip=True, separator=" ")
-    return msg
-
-
-def get_gun_name(gun_url):
-    res = requests.get(gun_url)
-    soup = bs4.BeautifulSoup(res.text, "html.parser")
-    elems = soup.select(".page-header__title")
-    return elems[0].getText()
-
-def get_gun_image(gun_url):
-    res = requests.get(gun_url)
-    soup = bs4.BeautifulSoup(res.text, "html.parser")
-    elems = soup.select(".pi-image-thumbnail")
-    return elems[0].attrs["src"]
+        embed.add_field(name=data.select("h3")[0].getText(),value=data.select("div")[0].get_text(strip=True, separator=" "))
+    
+    return embed
 
 
 client.run(TOKEN)
