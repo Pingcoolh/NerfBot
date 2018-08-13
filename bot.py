@@ -4,7 +4,8 @@ import asyncio
 import requests, bs4
 
 file = open("token.txt", "r")
-TOKEN = file.readlines()[0]
+TOKEN = file.readline().strip()
+print(TOKEN)
 file.close()
 
 client = commands.Bot(command_prefix = '!')
