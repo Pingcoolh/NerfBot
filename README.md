@@ -17,6 +17,6 @@ Once you have the token.txt ready, you can run the bot with `python3 <path to Ne
 
 ## Using the command
 When the bot is running, you can use this command in a text channel to call gun information:
-* `!gun <gun_name>`
+* `!nerf <gun_name>`
 
 You can use `!help` to see other miscellaneous commands.
