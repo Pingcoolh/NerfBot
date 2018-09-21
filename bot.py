@@ -5,7 +5,7 @@ import requests, bs4
 
 file = open("token.txt", "r")
 TOKEN = file.readline().strip()
-print(TOKEN)
+#print(TOKEN)
 file.close()
 
 client = commands.Bot(command_prefix = '!')
@@ -44,12 +44,13 @@ async def echo(*args):
 
 
 # Gun
-@client.command()
-async def nerf(*name):
+@client.command(pass_context=True)
+async def nerf(ctx, *args):
     gun_name = ''
-    for word in name:
+    for word in args:
         gun_name += ' ' + word
     try:
+        await client.send_typing(ctx.message.channel)
         await client.say(embed=search(gun_name))
     except:
         title = "Error"
